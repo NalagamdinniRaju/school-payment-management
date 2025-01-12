@@ -2,15 +2,20 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { LogIn, Mail, Lock } from "lucide-react";
+import { LogIn, Mail, Lock, Loader } from "lucide-react";
+
+
 
 const Login = ({ setIsAuthenticated }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+     setIsLoading(true);
     try {
       const response = await axios.post(
         "https://school-payment-manage-backend.onrender.com/api/auth/login",
@@ -25,11 +30,15 @@ const Login = ({ setIsAuthenticated }) => {
       toast.success("Logged in successfully");
     } catch (error) {
       toast.error("Invalid credentials");
+    } finally {
+      setIsLoading(false);
     }
+
+    
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4">
+    <div className="min-h-[calc(100vh-4rem)] mt-8 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
@@ -39,6 +48,9 @@ const Login = ({ setIsAuthenticated }) => {
             <h1 className="text-2xl font-bold">Welcome Back</h1>
             <p className="text-gray-500 dark:text-gray-400">
               Sign in to your account
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Please go through the Git repository for login credentials.
             </p>
           </div>
 
@@ -79,12 +91,19 @@ const Login = ({ setIsAuthenticated }) => {
               </div>
             </div>
 
-            <button
+           <button
               type="submit"
+              disabled={isLoading}
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center gap-2"
             >
-              <LogIn className="w-5 h-5" />
-              Sign In
+              {isLoading ? (
+                <Loader className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5" />
+                  Sign In
+                </>
+              )}
             </button>
           </form>
         </div>
